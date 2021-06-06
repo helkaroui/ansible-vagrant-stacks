@@ -1,0 +1,9 @@
+---
+# This playbook assumes you already have the kubectl binary installed
+# and available in the $PATH.
+- name: Retrieve kubectl config file from the master server.
+  fetch:
+    src: /root/.kube/config
+    dest: .kube/kubectl-config
+    flat: yes
+  when: kubernetes_role == 'master'

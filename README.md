@@ -1,2 +1,2 @@
 # ansible-vagrant-stacks
-Ansible examples using Vagrant to deploy to local VMs.
+This repository contains a collection of example virtual machines running various applications. The VMs are created via Vagrant and provisioned via Ansible.

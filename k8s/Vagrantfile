@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'pp'
+
+VAGRANTFILE_API_VERSION = "2"
+IMAGE_NAME = "ubuntu/xenial64"
+BASE_IP_RANGE = "192.168.1"
+HOST_NAME_PREFIX = "kube"
+N = 3
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = IMAGE_NAME
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.provider :virtualbox do |v|
+    v.memory = 8192
+    v.cpus = 3
+    v.linked_clone = true
+  end
+
+  # Define three VMs with static private IP addresses.
+  boxes = (1..N).map { |num| { :name => "#{HOST_NAME_PREFIX}-#{num}", :ip => "#{BASE_IP_RANGE}.#{80 + num}" } }
+  pp boxes
+
+  # Update inventory
+  File.open("inventory", "w") do |f|     
+    f.puts("[k8s-master]")
+    master = boxes.first()
+    f.puts("#{master[:name]} ansible_host=#{master[:ip]} kubernetes_role=master ansible_ssh_private_key_file=.vagrant/machines/#{master[:name]}/virtualbox/private_key")
+    f.puts("\n\n")
+    f.puts("[k8s-nodes]")
+    tail(boxes).each do |host|
+      f.puts("#{host[:name]} ansible_host=#{host[:ip]} kubernetes_role=node ansible_ssh_private_key_file=.vagrant/machines/#{host[:name]}/virtualbox/private_key")
+    end
+    f.puts("\n\n")
+    f.puts("[k8s:children]\nk8s-master\nk8s-nodes\n\n")
+    f.puts("[k8s:vars]\nansible_user=vagrant")
+  end
+
+  # Provision each of the VMs.
+  boxes.each do |opts|
+    config.vm.define opts[:name] do |config|
+      config.vm.hostname = opts[:name]
+      config.vm.network :public_network, bridge: "wlp8s0", ip: opts[:ip]
+
+      # Provision all the VMs in parallel using Ansible after last VM is up.
+      if opts[:name] == boxes.last()[:name]
+        config.vm.provision "ansible" do |ansible|
+          ansible.compatibility_mode = "2.0"
+          ansible.playbook = "main.yml"
+          ansible.limit = "all"
+        end
+      end
+    end
+  end
+
+end
+
+
+def tail(n)
+  n.to_a[1..-1]
+end
