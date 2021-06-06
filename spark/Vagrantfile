@@ -5,7 +5,9 @@ require 'pp'
 VAGRANTFILE_API_VERSION = "2"
 IMAGE_NAME = "ubuntu/xenial64"
 BASE_IP_RANGE = "192.168.1"
-HOST_NAME_PREFIX = "kube"
+IP_RANGE_START = 80
+HOST_NAME_PREFIX = "spark"
+
 N = 3
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -14,28 +16,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
   config.vm.provider :virtualbox do |v|
-    v.memory = 8192
-    v.cpus = 3
+    v.memory = 2048
+    v.cpus = 2
     v.linked_clone = true
   end
 
   # Define three VMs with static private IP addresses.
-  boxes = (1..N).map { |num| { :name => "#{HOST_NAME_PREFIX}-#{num}", :ip => "#{BASE_IP_RANGE}.#{80 + num}" } }
+  boxes = (1..N).map { |num| { :name => "#{HOST_NAME_PREFIX}-#{num}", :ip => "#{BASE_IP_RANGE}.#{IP_RANGE_START + num}" } }
   pp boxes
 
   # Update inventory
   File.open("inventory", "w") do |f|     
-    f.puts("[k8s-master]")
+    f.puts("[spark-master]")
     master = boxes.first()
-    f.puts("#{master[:name]} ansible_host=#{master[:ip]} kubernetes_role=master ansible_ssh_private_key_file=.vagrant/machines/#{master[:name]}/virtualbox/private_key")
+    f.puts("#{master[:name]} ansible_host=#{master[:ip]} spark_role=master ansible_ssh_private_key_file=.vagrant/machines/#{master[:name]}/virtualbox/private_key")
     f.puts("\n\n")
-    f.puts("[k8s-nodes]")
+    f.puts("[spark-workers]")
     tail(boxes).each do |host|
-      f.puts("#{host[:name]} ansible_host=#{host[:ip]} kubernetes_role=node ansible_ssh_private_key_file=.vagrant/machines/#{host[:name]}/virtualbox/private_key")
+      f.puts("#{host[:name]} ansible_host=#{host[:ip]} spark_role=worker ansible_ssh_private_key_file=.vagrant/machines/#{host[:name]}/virtualbox/private_key")
     end
     f.puts("\n\n")
-    f.puts("[k8s:children]\nk8s-master\nk8s-nodes\n\n")
-    f.puts("[k8s:vars]\nansible_user=vagrant")
+    f.puts("[spark:children]\nspark-master\nspark-workers\n\n")
+    f.puts("[spark:vars]\nansible_user=vagrant")
   end
 
   # Provision each of the VMs.

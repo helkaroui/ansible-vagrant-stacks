@@ -1,4 +1,1 @@
 roles/geerlingguy.*
-*.log
-.vagrant
-.kube

@@ -1,4 +1,8 @@
 ---
+kubernetes_version: '1.21'
+kubernetes_dashboard_version: '2.2.0'
+kubernetes_calico_version: '3.18'
+
 kubernetes_packages:
   - name: kubelet
     state: present
@@ -9,20 +13,15 @@ kubernetes_packages:
   - name: kubernetes-cni
     state: present
 
-kubernetes_version: '1.21'
-kubernetes_version_rhel_package: '1.21.1'
-
 kubernetes_role: master
-
 kubernetes_cluster_name: "k8s-simple-cluster"
 kubernetes_kubeadm_init_extra_opts: ""
 kubernetes_join_command_extra_opts: ""
 kubernetes_allow_pods_on_master: true
 kubernetes_enable_web_ui: true
-kubernetes_web_ui_manifest_file: https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+kubernetes_web_ui_manifest_file: https://raw.githubusercontent.com/kubernetes/dashboard/v{{ kubernetes_dashboard_version }}/aio/deploy/recommended.yaml
 
 kubernetes_pod_network:
-  # Calico CNI.
   cni: 'calico'
   cidr: '10.244.0.0/16'
 
@@ -33,10 +32,6 @@ kubernetes_config_kubelet_configuration:
 kubernetes_config_init_configuration:
   localAPIEndpoint:
     advertiseAddress: "{{ kubernetes_apiserver_advertise_address | default(ansible_default_ipv4.address, true) }}"
-# if you use the next lines, remove the command line argument below
-# nodeRegistration:
-#    ignorePreflightErrors:
-#      - all
 
 kubernetes_config_cluster_configuration:
   metadata:
@@ -53,16 +48,5 @@ kubernetes_apt_release_channel: main
 # Note that xenial repo is used for all Debian derivatives at this time.
 kubernetes_apt_repository: "deb http://apt.kubernetes.io/ kubernetes-xenial {{ kubernetes_apt_release_channel }}"
 kubernetes_apt_ignore_key_error: false
-
-kubernetes_yum_arch: '$basearch'
-kubernetes_yum_base_url: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-{{ kubernetes_yum_arch }}"
-kubernetes_yum_gpg_key:
-  - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-  - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-
-# Flannel config files.
-kubernetes_flannel_manifest_file_rbac: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
-kubernetes_flannel_manifest_file: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-
 # Calico config files
-kubernetes_calico_manifest_file: https://docs.projectcalico.org/v3.10/manifests/calico.yaml
+kubernetes_calico_manifest_file: https://docs.projectcalico.org/v{{ kubernetes_calico_version }}/manifests/calico.yaml

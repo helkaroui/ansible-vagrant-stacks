@@ -4,12 +4,6 @@
 
   vars_files:
     - vars/main.yml
-
-  pre_tasks:
-    - name: Copy Flannel manifest tailored for Vagrant.
-      copy:
-        src: files/manifests/kube-system/kube-flannel-vagrant.yml
-        dest: "~/kube-flannel-vagrant.yml"
         
   roles:
     - role: geerlingguy.swap
@@ -20,14 +14,9 @@
 
     - role: karoui.k8s-setup
       tags: ['kubernetes']
-
-
-- hosts: k8s-master
-  become: yes
-
-  vars_files:
-    - vars/main.yml
-  
-  roles:
+    
     - role: karoui.k8s-config
+      tags: ['kubernetes']
+
+    - role: karoui.k8s-deploy
       tags: ['kubernetes']
