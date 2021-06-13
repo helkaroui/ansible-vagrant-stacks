@@ -1,21 +1,73 @@
+- name: Check if spark directory is present
+  stat:
+    path: "{{ SPARK_HOME }}"
+  register: spark_directory
+
 - name: Download Spark distribution
-  get_url: url="{{ spark_mirror }}/spark-{{ spark_version }}.tgz"
-           dest="/tmp/{{ spark_src_dir }}/spark-{{ spark_version }}.tgz"
+  get_url: url="{{ SPARK_DOWNLOAD_URL }}"
+           dest="/tmp/spark-{{ SPARK_VERSION }}.tgz"
+  when: (not spark_directory.stat.exists)
 
 - name: Extract Spark distribution
-  unarchive: src="/tmp/{{ spark_src_dir }}/spark-{{ spark_version }}.tgz"
-             dest="{{ spark_usr_parent_dir }}"
-             copy=no
-             creates="{{ spark_usr_parent_dir }}/spark-{{ spark_version }}"
+  become: yes
+  unarchive: 
+    src: "/tmp/spark-{{ SPARK_VERSION }}.tgz"
+    dest: "{{ SPARK_PARENT_DIR }}"
+    copy: no
+    creates: "{{ SPARK_PARENT_DIR }}/spark-{{ SPARK_VERSION }}"
+    owner: "{{ ansible_user }}"
+  when: (not spark_directory.stat.exists)
 
+- name: Delete the archive
+  file:
+    path: "/tmp/spark-{{ SPARK_VERSION }}.tgz"
+    state: absent
+  when: (not spark_directory.stat.exists)
 
-- name: Configure Spark environment
-  template: src=spark-env.sh.j2
-            dest="{{ spark_usr_parent_dir }}/spark-{{ spark_version }}/conf/spark-env.sh"
-  tags: ["config"]
+- name: Create symbolic link
+  become: yes
+  file:
+    src: "{{ SPARK_PARENT_DIR }}/spark-{{ SPARK_VERSION }}"
+    dest: "{{ SPARK_HOME }}"
+    state: link
+    owner: "{{ ansible_user }}"
+  when: (not spark_directory.stat.exists)
 
-- name: Configure Spark defaults config file
-  template: src=spark-defaults.conf.j2
-            dest="{{ spark_usr_parent_dir }}/spark-{{ spark_version }}/conf/spark-defaults.conf"
-  tags: ["config"]
+- name: 'Add {{ SPARK_HOME }} to PATH'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME }}).*?)(["])$'
+    line: 'PATH=\1\2:{{ SPARK_HOME }}\3'
+    backrefs: yes
+  when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
 
+- name: 'Add {{ SPARK_HOME_BIN }} to PATH'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME_BIN }}).*?)(["])$'
+    line: 'PATH=\1\2:{{ SPARK_HOME_BIN }}\3'
+    backrefs: yes
+  when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
+
+- name: 'Add {{ SPARK_HOME_SBIN }} to PATH'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME_SBIN }}).*?)(["])$'
+    line: 'PATH=\1\2:{{ SPARK_HOME_SBIN }}\3'
+    backrefs: yes
+  when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
+
+- name: 'Add SPARK_HOME to environment variables'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    line: 'SPARK_HOME={{ SPARK_HOME }}'
+
+- name: 'Add PYSPARK_PYTHON to environment variables'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    line: 'PYSPARK_PYTHON={{ PYSPARK_PYTHON }}'

@@ -5,7 +5,7 @@ require 'pp'
 VAGRANTFILE_API_VERSION = "2"
 IMAGE_NAME = "ubuntu/xenial64"
 BASE_IP_RANGE = "192.168.1"
-IP_RANGE_START = 80
+IP_RANGE_START = 70
 HOST_NAME_PREFIX = "spark"
 
 N = 3
@@ -19,6 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.memory = 2048
     v.cpus = 2
     v.linked_clone = true
+    v.customize ["modifyvm", :id, "--groups", "/spark"]
   end
 
   # Define three VMs with static private IP addresses.

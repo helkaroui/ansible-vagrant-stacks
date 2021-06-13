@@ -1,6 +1,0 @@
-- name: deploy the customized spark log4j properties
-  template:
-    src: "log4j.properties.j2"
-    dest: "{{spark_usr_parent_dir}}/spark-{{spark_version}}/conf/log4j.properties"
-    owner: "{{ spark_user }}"
-    group: "{{ spark_user }}"

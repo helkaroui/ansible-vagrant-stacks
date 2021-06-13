@@ -1,0 +1,31 @@
+- name: deploy workers file
+  template:
+    src: "workers.j2"
+    dest: "{{SPARK_HOME}}/conf/workers"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+
+- name: deploy the customized spark log4j properties
+  template:
+    src: "log4j.properties.j2"
+    dest: "{{SPARK_HOME}}/conf/log4j.properties"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+
+- name: deploy spark-env file
+  template:
+    src: "spark-env.sh.j2"
+    dest: "{{SPARK_HOME}}/conf/spark-env.sh"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+
+- name: deploy spark-defaults file
+  template:
+    src: "spark-defaults.conf.j2"
+    dest: "{{SPARK_HOME}}/conf/spark-defaults.conf"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]

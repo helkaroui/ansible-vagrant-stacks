@@ -1,0 +1,11 @@
+- name: Ensure Java is installed.
+  become: yes
+  apt:
+    name: "{{ JAVA_PACKAGES }}"
+    state: present
+
+- name: 'Add JAVA_HOME to environment variables'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    line: 'JAVA_HOME={{ JAVA_HOME }}'
