@@ -1,0 +1,54 @@
+
+- name: Ensure dependencies are installed.
+  package: name=wget state=present
+
+- name: Check if ssh key has already been initialized.
+  stat:
+    path: ~/.ssh/id_rsa.pub
+  register: master_ssh_key
+  when: spark_role == 'master'
+
+- name: Generate an OpenSSH rsa keypair for master
+  community.crypto.openssh_keypair:
+    path: ~/.ssh/id_rsa
+    size: 4096
+    type: rsa
+  when: spark_role == 'master' and (not master_ssh_key.stat.exists)
+
+- name: Get Master public key
+  slurp:
+    src: ~/.ssh/id_rsa.pub
+  register: master_public_key
+  when: spark_role == 'master'
+
+- name: Set Master key as authorised in worker {{ ansible_hostname }}
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ hostvars['spark-1']['master_public_key']['content'] | b64decode }}"
+  when: spark_role == 'worker'
+
+
+- name: 'Update /etc/hosts '
+  become: yes
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: ".*\t{{ item }}"
+    line: "{{ hostvars[item]['ansible_host'] }}\t{{ item }}"
+    state: present
+    backup: yes
+  with_items: "{{groups['spark-workers']}}"
+  when: spark_role == 'master'
+
+- name: Setup Java
+  include: setup-java.yml
+
+- name: Intsall Spark
+  include: setup-spark.yml
+
+- name: Setup Spark History Server
+  include: setup-hs.yml
+
+- name: Configure spark
+  include: setup-configuration.yml
+

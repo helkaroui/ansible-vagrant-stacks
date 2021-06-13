@@ -1,0 +1,13 @@
+SPARK_PARENT_DIR: "/opt"
+SPARK_HOME: "/opt/spark"
+SPARK_HOME_BIN: "/opt/spark/bin"
+SPARK_HOME_SBIN: "/opt/spark/sbin"
+SPARK_UI_PORT: "8080"
+SPARK_HS_EVENTLOGS_DIR: "/opt/spark/eventLogs"
+PYSPARK_PYTHON: "/usr/bin/python3"
+SPARK_VERSION: "3.1.2-bin-hadoop3.2"
+SPARK_DOWNLOAD_URL: "https://miroir.univ-lorraine.fr/apache/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz"
+JAVA_PACKAGES: 
+  - "default-jre"
+
+JAVA_HOME: "/usr/lib/jvm/default-java"

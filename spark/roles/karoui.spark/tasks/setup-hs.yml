@@ -1,0 +1,4 @@
+- name: Create eventlogs directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ SPARK_HS_EVENTLOGS_DIR }}"
+    state: directory

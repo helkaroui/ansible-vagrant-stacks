@@ -1,0 +1,3 @@
+SPARK_MASTER_HOST="{% for host in groups['spark-master'] %}{{hostvars[host]['ansible_host']}}{% endfor %}"
+SPARK_MASTER_WEBUI_PORT={{SPARK_UI_PORT}}
+SPARK_LOCAL_IP={{ hostvars[inventory_hostname]['ansible_host'] }}
