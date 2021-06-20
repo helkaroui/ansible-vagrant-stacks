@@ -29,3 +29,16 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   tags: ["config"]
+
+- name: deploy spark metrics property
+  template:
+    src: "metrics.properties.j2"
+    dest: "{{SPARK_HOME}}/conf/metrics.properties"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+
+- name: Create metrics directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ SPARK_METRICS_DIR }}"
+    state: directory
