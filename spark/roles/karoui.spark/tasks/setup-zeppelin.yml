@@ -1,0 +1,111 @@
+- name: Check if zeppelin directory is present
+  stat:
+    path: "{{ ZEPPELIN_HOME }}"
+  register: zeppelin_directory
+
+- name: Download Zeppelin binary
+  get_url: url="{{ ZEPPELIN_DOWNLOAD_URL }}"
+           dest="/tmp/zeppelin-{{ZEPPELIN_VERSION}}-bin-all.tgz"
+  when: (not zeppelin_directory.stat.exists)
+
+- name: Extract Zeppelin
+  become: yes
+  unarchive: 
+    src: "/tmp/zeppelin-{{ZEPPELIN_VERSION}}-bin-all.tgz"
+    dest: "{{ ZEPPELIN_PARENT_DIR }}"
+    copy: no
+    creates: "{{ ZEPPELIN_PARENT_DIR }}/zeppelin-{{ ZEPPELIN_VERSION }}-bin-all"
+    owner: "{{ ansible_user }}"
+  when: (not zeppelin_directory.stat.exists)
+
+- name: Delete the archive
+  file:
+    path: "/tmp/zeppelin-{{ZEPPELIN_VERSION}}-bin-all.tgz"
+    state: absent
+  when: (not zeppelin_directory.stat.exists)
+
+- name: Create symbolic link to zeppelin
+  become: yes
+  file:
+    src: "{{ ZEPPELIN_PARENT_DIR }}/zeppelin-{{ ZEPPELIN_VERSION }}-bin-all"
+    dest: "{{ ZEPPELIN_HOME }}"
+    state: link
+    owner: "{{ ansible_user }}"
+  when: (not zeppelin_directory.stat.exists)
+
+- name: 'Add ZEPPELIN_HOME = {{ ZEPPELIN_HOME }} to PATH'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: 'PATH=(["])((?!.*?{{ ZEPPELIN_HOME }}).*?)(["])$'
+    line: 'PATH=\1\2:{{ ZEPPELIN_HOME }}\3'
+    backrefs: yes
+  when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
+
+- name: 'Add ZEPPELIN_HOME/bin to PATH'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    regexp: 'PATH=(["])((?!.*?{{ ZEPPELIN_HOME }}/bin).*?)(["])$'
+    line: 'PATH=\1\2:{{ ZEPPELIN_HOME }}/bin\3'
+    backrefs: yes
+  when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
+
+- name: 'Add ZEPPELIN_HOME to environment variables'
+  become: yes
+  lineinfile:
+    path: /etc/environment
+    line: 'ZEPPELIN_HOME={{ ZEPPELIN_HOME }}'
+
+- name: Setup zeppelin-site.xml
+  become: yes
+  template:
+    src: "zeppelin/zeppelin-site.xml.j2"
+    dest: "{{ ZEPPELIN_HOME }}/conf/zeppelin-site.xml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+
+- name: Configure interpreters
+  become: yes
+  template:
+    src: "zeppelin/interpreters/{{ item }}-interpreter-setting.json.j2"
+    dest: "{{ ZEPPELIN_HOME }}/interpreter/{{ item }}/interpreter-setting.json"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+  with_items: "{{ ZEPPELIN_INTERPRETERS_CONFIG }}"
+
+- name: Setup security (shiro.ini)
+  become: yes
+  template:
+    src: "zeppelin/shiro.ini.j2"
+    dest: "{{ ZEPPELIN_HOME }}/conf/shiro.ini"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+  when: ZEPPELIN_ENABLE_SECURITY
+
+- name: Configure zeppelin as a service
+  become: yes
+  template:
+    src: "zeppelin/zeppelin.service.j2"
+    dest: "/etc/systemd/system/zeppelin.service"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  tags: ["config"]
+  when: ZEPPELIN_AUTO_START
+
+- name: Enable zeppelin service
+  become: yes
+  ansible.builtin.service:
+    name: zeppelin
+    enabled: yes
+  when: ZEPPELIN_AUTO_START
+
+- name: Start zeppelin service
+  become: yes
+  ansible.builtin.service:
+    name: zeppelin
+    state: restarted
+  when: ZEPPELIN_AUTO_START

@@ -1,0 +1,14 @@
+
+- name: Check connectivity to spark master ui
+  # local_action runs task on the machine running ansible
+  local_action: "uri url=http://{{ ansible_host }}:{{ SPARK_UI_PORT }} return_content=yes"
+  register: spark_process
+  ignore_errors: yes
+
+- name: Start Spark cluster
+  ansible.builtin.command: ${SPARK_HOME}/sbin/start-all.sh
+  when: spark_process.status != 200
+
+- name: Check connectivity to spark master ui after starting
+  # local_action runs task on the machine running ansible
+  local_action: "uri url=http://{{ ansible_host }}:{{ SPARK_UI_PORT }} return_content=yes"

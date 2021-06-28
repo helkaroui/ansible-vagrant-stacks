@@ -33,7 +33,7 @@
     owner: "{{ ansible_user }}"
   when: (not spark_directory.stat.exists)
 
-- name: 'Add {{ SPARK_HOME }} to PATH'
+- name: 'Add "{{ SPARK_HOME }}" to PATH'
   become: yes
   lineinfile:
     path: /etc/environment
@@ -42,21 +42,21 @@
     backrefs: yes
   when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
 
-- name: 'Add {{ SPARK_HOME_BIN }} to PATH'
+- name: 'Add {{ SPARK_HOME }}/bin to PATH'
   become: yes
   lineinfile:
     path: /etc/environment
-    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME_BIN }}).*?)(["])$'
-    line: 'PATH=\1\2:{{ SPARK_HOME_BIN }}\3'
+    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME }}/bin).*?)(["])$'
+    line: 'PATH=\1\2:{{ SPARK_HOME }}/bin\3'
     backrefs: yes
   when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
 
-- name: 'Add {{ SPARK_HOME_SBIN }} to PATH'
+- name: 'Add {{ SPARK_HOME }}/sbin to PATH'
   become: yes
   lineinfile:
     path: /etc/environment
-    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME_SBIN }}).*?)(["])$'
-    line: 'PATH=\1\2:{{ SPARK_HOME_SBIN }}\3'
+    regexp: 'PATH=(["])((?!.*?{{ SPARK_HOME }}/sbin).*?)(["])$'
+    line: 'PATH=\1\2:{{ SPARK_HOME }}/sbin\3'
     backrefs: yes
   when: lookup('file', '/etc/environment') is search('^\s*PATH\s*=')
 

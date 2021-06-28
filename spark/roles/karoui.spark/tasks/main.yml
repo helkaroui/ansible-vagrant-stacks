@@ -43,6 +43,9 @@
 - name: Setup Java
   include: setup-java.yml
 
+- name: Setup Python
+  include: setup-python.yml
+
 - name: Intsall Spark
   include: setup-spark.yml
 
@@ -52,3 +55,14 @@
 - name: Configure spark
   include: setup-configuration.yml
 
+- name: Start the cluster
+  include: start-spark.yml
+  when: spark_role == 'master' and SPARK_AUTO_START
+
+- name: Start Spark HS
+  include: start-spark-hs.yml
+  when: spark_role == 'master' and SPARK_HS_AUTO_START
+
+- name: Setup Zeppelin
+  include: setup-zeppelin.yml
+  when: spark_role == 'master' and ZEPPELIN_INSTALL

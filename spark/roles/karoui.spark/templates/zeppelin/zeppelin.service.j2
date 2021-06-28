@@ -1,0 +1,9 @@
+[Unit]
+Description=Service to run Zeppelin Daemon
+[Service]
+Type=forking
+WorkingDirectory={{ ZEPPELIN_HOME }}
+ExecStart={{ ZEPPELIN_HOME }}/bin/zeppelin-daemon.sh start
+ExecStop={{ ZEPPELIN_HOME }}/bin/zeppelin-daemon.sh stop
+[Install]
+WantedBy=multi-user.target

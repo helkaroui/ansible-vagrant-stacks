@@ -1,7 +1,11 @@
-spark.eventLog.enabled=true
-spark.eventLog.dir={{SPARK_HS_EVENTLOGS_DIR}}
-spark.history.fs.logDirectory={{SPARK_HS_EVENTLOGS_DIR}}
 spark.serializer=org.apache.spark.serializer.KryoSerializer
 spark.driver.memory=1g
 spark.driver.extraJavaOptions=-XX:+UseG1GC
 spark.executor.extraJavaOptions=-XX:+UseG1GC
+
+
+
+spark.history.ui.port={{SPARK_HS_UI_PORT}}
+spark.eventLog.enabled={{SPARK_HS_ENABLED}}
+spark.eventLog.dir={{SPARK_HS_EVENTLOGS_DIR}}
+spark.history.fs.logDirectory={{SPARK_HS_EVENTLOGS_DIR}}

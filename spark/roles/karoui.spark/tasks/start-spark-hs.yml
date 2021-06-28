@@ -1,0 +1,14 @@
+
+- name: Check connectivity to spark history server ui
+  # local_action runs task on the machine running ansible
+  local_action: "uri url=http://{{ ansible_host }}:{{ SPARK_HS_UI_PORT }} return_content=yes"
+  register: spark_hs_process
+  ignore_errors: yes
+
+- name: Start Spark history server
+  ansible.builtin.command: ${SPARK_HOME}/sbin/start-history-server.sh
+  when: spark_hs_process.status != 200
+
+- name: Check connectivity to spark history server ui after starting
+  # local_action runs task on the machine running ansible
+  local_action: "uri url=http://{{ ansible_host }}:{{ SPARK_HS_UI_PORT }} return_content=yes"

@@ -1,7 +1,7 @@
 - name: Ensure Java is installed.
   become: yes
   apt:
-    name: "{{ JAVA_PACKAGES }}"
+    name: "default-jre"
     state: present
 
 - name: 'Add JAVA_HOME to environment variables'

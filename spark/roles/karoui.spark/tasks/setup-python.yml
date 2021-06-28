@@ -1,0 +1,11 @@
+- name: Add python 3.6 repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+
+- name: Ensure Python 3.6 is installed.
+  become: yes
+  apt:
+    name: python3.6
+    state: present
