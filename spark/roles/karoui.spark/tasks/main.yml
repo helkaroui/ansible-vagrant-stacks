@@ -46,7 +46,7 @@
 - name: Setup Python
   include: setup-python.yml
 
-- name: Intsall Spark
+- name: Install Spark
   include: setup-spark.yml
 
 - name: Setup Spark History Server

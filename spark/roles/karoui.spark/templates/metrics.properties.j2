@@ -208,13 +208,13 @@
 # CSV Sink
 #######################################################################
 # Enable CsvSink for all instances by class name
-driver.sink.csv.class=org.apache.spark.metrics.sink.CsvSink
-executor.sink.csv.class=org.apache.spark.metrics.sink.CsvSink
+#driver.sink.csv.class=org.apache.spark.metrics.sink.CsvSink
+#executor.sink.csv.class=org.apache.spark.metrics.sink.CsvSink
 
 # Polling period for the CsvSink
-*.sink.csv.period=5
+#*.sink.csv.period=5
 # Unit of the polling period for the CsvSink
-*.sink.csv.unit=seconds
+#*.sink.csv.unit=seconds
 
 # Polling directory for CsvSink
-*.sink.csv.directory={{SPARK_METRICS_DIR}}
+#*.sink.csv.directory={{SPARK_METRICS_DIR}}
