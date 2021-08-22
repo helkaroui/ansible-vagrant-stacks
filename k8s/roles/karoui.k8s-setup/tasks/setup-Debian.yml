@@ -1,12 +1,15 @@
 ---
 - name: Ensure dependencies are installed.
+  become: true
   apt:
     name:
       - apt-transport-https
       - ca-certificates
+      - python3-pip
     state: present
 
 - name: Add Kubernetes apt key.
+  become: true
   apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     state: present
@@ -14,13 +17,33 @@
   ignore_errors: "{{ kubernetes_apt_ignore_key_error }}"
 
 - name: Add Kubernetes repository.
+  become: true
   apt_repository:
     repo: "{{ kubernetes_apt_repository }}"
     state: present
     update_cache: true
 
 - name: Add Kubernetes apt preferences file to pin a version.
+  become: true
   template:
     src: apt-preferences-kubernetes.j2
     dest: /etc/apt/preferences.d/kubernetes
     mode: 0644
+
+# - name: Add python 3.6 repository into sources list
+#   become: yes
+#   ansible.builtin.apt_repository:
+#     repo: ppa:deadsnakes/ppa
+#     state: present
+
+# - name: Ensure Python 3.6 is installed.
+#   become: yes
+#   apt:
+#     name: python3.6
+#     state: present
+
+# - name: Install kubernetes python package
+#   pip3:
+#     name: kubernetes
+#   vars:
+#     ansible_python_interpreter: /usr/bin/python3.6

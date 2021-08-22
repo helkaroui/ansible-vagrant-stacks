@@ -1,0 +1,6 @@
+- name: Creates deployments directory
+  file:
+    path: ~/deployments
+    state: directory
+
+# - include_tasks: nginx-controller.yml

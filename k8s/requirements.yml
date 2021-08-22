@@ -1,6 +1,4 @@
 ---
-roles:
-  - name: geerlingguy.swap
-
 collections:
-  - name: community.kubernetes
+  - name: kubernetes.core
+    version: 2.1.1

@@ -1,22 +1,23 @@
 ---
 - hosts: k8s
-  become: yes
+  # become: yes
 
   vars_files:
     - vars/main.yml
         
   roles:
-    - role: geerlingguy.swap
+    - role: karoui.swap
       tags: ['swap', 'kubernetes']
 
     - role: karoui.docker
-      tags: ['docker']
+      tags: ['docker', 'kubernetes']
 
     - role: karoui.k8s-setup
       tags: ['kubernetes']
     
-    - role: karoui.k8s-config
+    - role: karoui.k8s-kubectl
       tags: ['kubernetes']
 
-    - role: karoui.k8s-deploy
+    - role: karoui.k8s-default-apps
       tags: ['kubernetes']
+      when: kubernetes_role == 'master'

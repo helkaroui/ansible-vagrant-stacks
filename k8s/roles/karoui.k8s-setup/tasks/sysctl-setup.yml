@@ -1,5 +1,6 @@
 ---
 - name: Ensure procps is installed.
+  become: true
   package:
     name: "{{ procps_package }}"
     state: present
@@ -9,6 +10,7 @@
 
 # See: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#letting-iptables-see-bridged-traffic
 - name: Let iptables see bridged traffic.
+  become: true
   sysctl:
     name: "{{ item }}"
     value: '1'

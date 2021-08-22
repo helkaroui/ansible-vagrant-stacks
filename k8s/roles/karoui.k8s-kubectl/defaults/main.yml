@@ -1,0 +1,2 @@
+kubectl_config_path: "/root/.kube/config"
+kubectl_local_tmp_path: ".kube/kubectl-config"

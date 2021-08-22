@@ -87,3 +87,4 @@
   when:
     - kubernetes_enable_web_ui | bool
     - kubernetes_dashboard_service.rc != 0
+  ignore_errors: yes

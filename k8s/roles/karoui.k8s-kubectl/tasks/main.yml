@@ -3,7 +3,7 @@
 # and available in the $PATH.
 - name: Retrieve kubectl config file from the master server.
   fetch:
-    src: /root/.kube/config
-    dest: .kube/kubectl-config
+    src: "{{ kubectl_config_path }}"
+    dest: "{{ kubectl_local_tmp_path }}"
     flat: yes
   when: kubernetes_role == 'master'

@@ -1,0 +1,12 @@
+
+# Download and apply manifest
+- name: Download ingress-nginx manifest to the cluster.
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v{{ nginx_controller_version }}/deploy/static/provider/cloud/deploy.yaml
+    dest: ~/deployments/ingress-nginx-v{{ nginx_controller_version }}.yaml
+    mode: '0664'
+
+- name: Apply ingress-nginx manifest to the cluster.
+  kubernetes.core.k8s:
+    state: present
+    src: ~/deployments/ingress-nginx-v{{ nginx_controller_version }}.yaml

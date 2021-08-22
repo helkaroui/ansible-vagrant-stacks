@@ -5,6 +5,8 @@ require 'pp'
 VAGRANTFILE_API_VERSION = "2"
 IMAGE_NAME = "ubuntu/xenial64"
 BASE_IP_RANGE = "192.168.1"
+BASE_IP_START = 80
+
 HOST_NAME_PREFIX = "kube"
 N = 3
 
@@ -17,14 +19,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.memory = 8192
     v.cpus = 3
     v.linked_clone = true
+    v.customize ["modifyvm", :id, "--groups", "/k8s"]
   end
 
   # Define three VMs with static private IP addresses.
-  boxes = (1..N).map { |num| { :name => "#{HOST_NAME_PREFIX}-#{num}", :ip => "#{BASE_IP_RANGE}.#{80 + num}" } }
+  boxes = (1..N).map { |num| { :name => "#{HOST_NAME_PREFIX}-#{num}", :ip => "#{BASE_IP_RANGE}.#{BASE_IP_START + num}" } }
   pp boxes
 
   # Update inventory
-  File.open("inventory", "w") do |f|     
+  File.open("inventory/vm", "w") do |f|     
     f.puts("[k8s-master]")
     master = boxes.first()
     f.puts("#{master[:name]} ansible_host=#{master[:ip]} kubernetes_role=master ansible_ssh_private_key_file=.vagrant/machines/#{master[:name]}/virtualbox/private_key")
@@ -50,7 +53,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           ansible.compatibility_mode = "2.0"
           ansible.playbook = "main.yml"
           ansible.limit = "all"
-          ansible.inventory_path = "inventory"
+          ansible.inventory_path = "inventory/vm"
         end
       end
     end

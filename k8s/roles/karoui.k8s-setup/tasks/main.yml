@@ -7,8 +7,10 @@
 
 - name: Ensure dependencies are installed.
   package: name=curl state=present
+  become: true
 
 - name: Install Kubernetes packages.
+  become: true
   package:
     name: "{{ item.name | default(item) }}"
     state: "{{ item.state | default('present') }}"
@@ -18,12 +20,14 @@
 - include_tasks: sysctl-setup.yml
 
 - name: Ensure kubelet is started and enabled at boot.
+  become: true
   service:
     name: kubelet
     state: started
     enabled: true
 
 - name: Check if Kubernetes has already been initialized.
+  become: true
   stat:
     path: /etc/kubernetes/admin.conf
   register: kubernetes_init_stat
@@ -49,8 +53,14 @@
   delegate_facts: true
   with_items: "{{ groups['all'] }}"
 
+- name: Creates temp directory
+  file:
+    path: .kube
+    state: directory
+  delegate_to: localhost
+  when: kubernetes_role == 'master'
+
 - name: Copy join command to local file
-  become: false
   local_action: copy content="{{ kubernetes_join_command }}" dest=".kube/join-command.sh"
   when: kubernetes_role == 'master'
 

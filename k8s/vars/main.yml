@@ -1,7 +1,19 @@
 ---
-swap_file_state: absent
+# Swap Role
 swap_file_path: /dev/mapper/packer--debian--9--amd64--vg-swap_1
 
+# Docker Role
+
+
+# Kubectl Role
+kubectl_config_path: "/root/.kube/config"
+kubectl_local_tmp_path: ".kube/kubectl-config"
+
+# Apps
+## Nginx ingress
+nginx_controller_version: '0.47.0'
+
+# Kubernetes Role
 kubernetes_cluster_name: "k8s-datacamp"
 kubernetes_version: '1.21'
 kubernetes_allow_pods_on_master: True
@@ -16,6 +28,6 @@ kubernetes_packages:
   - name: kubernetes-cni
     state: present
 
-kubernetes_apiserver_advertise_address: "192.168.1.81"
+kubernetes_apiserver_advertise_address: "{% for host in groups['k8s-master'] %}{{hostvars[host]['ansible_host']}}{% endfor %}"
 kubernetes_flannel_manifest_file: "~/kube-flannel-vagrant.yml"
 kubernetes_kubelet_extra_args: '--node-ip={{ ansible_host }}'

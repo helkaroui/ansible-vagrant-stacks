@@ -1,5 +1,6 @@
 ---
   - name: Install packages that allow apt to be used over HTTPS
+    become: true
     apt:
       name: "{{ packages }}"
       state: present
@@ -13,16 +14,19 @@
       - software-properties-common
 
   - name: Add an apt signing key for Docker
+    become: true
     apt_key:
       url: https://download.docker.com/linux/ubuntu/gpg
       state: present
 
   - name: Add apt repository for stable version
+    become: true
     apt_repository:
       repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
       state: present
 
   - name: Install docker and its dependecies
+    become: true
     apt: 
       name: "{{ packages }}"
       state: present
@@ -36,6 +40,7 @@
       - docker status
 
   - name: Add vagrant user to docker group
+    become: true
     user:
       name: vagrant
       group: docker
