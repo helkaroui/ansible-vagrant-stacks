@@ -2,6 +2,7 @@
 kubernetes_version: '1.21'
 kubernetes_dashboard_version: '2.2.0'
 kubernetes_calico_version: '3.18'
+kubernetes_api_spec_version: 'kubeadm.k8s.io/v1beta2'
 
 kubernetes_packages:
   - name: kubelet
@@ -16,6 +17,8 @@ kubernetes_packages:
 kubernetes_role: master
 kubernetes_cluster_name: "k8s-simple-cluster"
 kubernetes_kubeadm_init_extra_opts: ""
+kubernetes_skip_init: false
+
 kubernetes_join_command_extra_opts: ""
 kubernetes_allow_pods_on_master: true
 kubernetes_enable_web_ui: true
@@ -32,10 +35,10 @@ kubernetes_config_kubelet_configuration:
 kubernetes_config_init_configuration:
   localAPIEndpoint:
     advertiseAddress: "{{ kubernetes_apiserver_advertise_address | default(ansible_default_ipv4.address, true) }}"
+    bindPort: 6443
 
 kubernetes_config_cluster_configuration:
-  metadata:
-    name: "{{ kubernetes_cluster_name }}"
+  clusterName: "{{ kubernetes_cluster_name }}"
   networking:
     podSubnet: "{{ kubernetes_pod_network.cidr }}"
   kubernetesVersion: "{{ kubernetes_version_kubeadm }}"

@@ -1,8 +1,11 @@
 ---
 - name: Create the directory for the kubernetes_config_file
+  become: true
   file:
     path: "{{ kubernetes_kubeadm_kubelet_config_file_path | dirname }}"
     state: directory
+    owner: "{{ansible_user}}"
+    group: "{{ansible_user}}"
 
 - name: Deploy the config-file for kubeadm and kubelet
   template:
@@ -15,7 +18,7 @@
     --config {{ kubernetes_kubeadm_kubelet_config_file_path }}
     {{ kubernetes_kubeadm_init_extra_opts }}
   register: kubeadmin_init
-  when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is not defined)
+  when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is not defined) and (not kubernetes_skip_init)
 
 - name: Initialize Kubernetes master with kubeadm init and ignore_preflight_errors
   command: >
@@ -24,7 +27,7 @@
     --ignore-preflight-errors={{ kubernetes_ignore_preflight_errors }}
     {{ kubernetes_kubeadm_init_extra_opts }}
   register: kubeadmin_init
-  when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is defined)
+  when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is defined) and (not kubernetes_skip_init)
 
 - name: Print the init output to screen.
   debug:
@@ -41,7 +44,9 @@
 - name: Symlink the kubectl admin.conf to ~/.kube/conf.
   file:
     src: /etc/kubernetes/admin.conf
-    dest: ~/.kube/config
+    dest: "/home/{{ansible_user}}/.kube/config"
+    owner: "{{ansible_user}}"
+    group: "{{ansible_user}}"
     state: link
     mode: 0644
 

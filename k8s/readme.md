@@ -6,17 +6,22 @@ It's used for modeling a multi-server production topology, such as :
 - disaster-case testing: machines dying, network partitions, slow networks, inconsistent world views, etc.
 
 ## Quick start guide
-### 1- Install dependencies
+### Install dependencies
 - VirtualBox
 - Vagrant
 - Ansible (Mac/Linux only])
 
-### 2- Build the cluster
-1. Download this git repo `git clone git@github.com:helkaroui/ansible-vagrant-stacks.git`
-2. In the terminal, navigate to the project dir, then to spark directory `cd ansible-vagrant-stacks && cd k8s`
-3. Install Ansible requirements `ansible-galaxy install -r requirements.yml -f`
-4. Run `vagrant up` and watch the magic 🪄
+## How to run the playbook
+### 1- Locally
+To install k8s on the localhost machine, just run the following command. It will ask for the user password.
+```
+ansible-playbook main.yml -i inventory/localhost --ask-become-pass
+```
 
+### 2- VM cluster
+1. In the terminal, navigate to the project dir, then to spark directory `cd ansible-vagrant-stacks && cd k8s`
+2. Install Ansible requirements `ansible-galaxy install -r requirements.yml -f`
+3. Run `vagrant up` and watch the magic 🪄
 
 ## Notes
 - To shut down the cluster enter `vagrant halt` in the Terminal in the same folder that has the **Vagrantfile**. 
