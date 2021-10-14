@@ -1,0 +1,33 @@
+
+---
+
+- name: install ufw
+  apt:
+    package: ufw
+    state: present
+
+- name: configure ufw defaults
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items:
+    - "{{ ufw_defaults }}"
+  when: ufw_defaults|length > 0
+  notify:
+    - reload ufw
+
+- name: configure ufw rules
+  ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    from_ip: "{{ item.from_ip|default('any') }}"
+  with_items:
+    - "{{ ufw_rules }}"
+  when: ufw_rules|length > 0
+  notify:
+    - reload ufw
+
+- name: enable ufw
+  ufw:
+    state: enabled

@@ -1,0 +1,121 @@
+---
+
+- name: Ensure that the PowerDNS configuration directory exists
+  file:
+    name: "{{ pdns_config_dir }}"
+    state: directory
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+    mode: 0750
+    recurse: yes
+
+- name: Ensure that the PowerDNS include-dir directory exists
+  file:
+    name: "{{ pdns_include_dir }}"
+    state: directory
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+    mode: 0750
+    recurse: yes
+
+- name: Ensure that the PowerDNS recursor include-dir directory exists
+  file:
+    name: "{{ pdns_recursor_include_dir }}"
+    state: directory
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+    mode: 0750
+    recurse: yes
+
+
+- name: Ensure that the PowerDNS socket directory exists
+  file:
+    name: "{{ pdns_run_dir }}"
+    state: directory
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+
+- name: Ensure that the PowerDNS recursor socket directory exists
+  file:
+    name: "{{ pdns_recursor_run_dir }}"
+    state: directory
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+
+- name: Generate the PowerDNS configuration
+  template:
+    src: pdns.conf.j2
+    dest: "{{ pdns_config_dir }}/{{ pdns_config_file }}"
+    mode: 0640
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+  notify: restart pdns
+
+- name: Generate the PowerDNS recursor configuration
+  template:
+    src: recursor.conf.j2
+    dest: "{{ pdns_config_dir }}/{{ pdns_recursor_config_file }}"
+    mode: 0640
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"
+  notify: restart pdns-recursor
+
+
+- name: Replace a localhost entry with our own
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^\#?DNS\='
+    line: "DNS=127.0.0.1"
+
+- name: Replace a localhost entry with our own
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^\#?DNSStubListener\='
+    line: "DNSStubListener=no"
+
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    state: link
+    force: true
+
+- name: Restart systemd-resolve
+  service:
+    name: "systemd-resolved"
+    state: restarted
+    sleep: 1
+
+- name: Override the PowerDNS Authoritative Server unit (systemd)
+  template:
+    src: "pdns_server.service.j2"
+    dest: "/etc/systemd/system/pdns.service"
+    owner: root
+    group: root
+
+- name: Override the PowerDNS Recursive Server unit (systemd)
+  template:
+    src: "pdns_recursor.service.j2"
+    dest: "/etc/systemd/system/pdns-recursor.service"
+    owner: root
+    group: root
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Restart PowerDNS
+  service:
+    name: "pdns"
+    state: restarted
+    enabled: yes
+    sleep: 1
+
+- name: Restart PowerDNS Recursor
+  service:
+    name: "pdns-recursor"
+    state: restarted
+    enabled: yes
+    sleep: 1

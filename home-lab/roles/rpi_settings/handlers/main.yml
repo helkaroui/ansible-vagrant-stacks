@@ -1,0 +1,13 @@
+---
+
+- name: reload ufw
+  ufw:
+    state: reloaded
+
+- name: reboot host
+  reboot:
+
+- name: restart fail2ban
+  service:
+    name: fail2ban
+    state: restarted

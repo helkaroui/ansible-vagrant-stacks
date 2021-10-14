@@ -1,0 +1,9 @@
+---
+
+- name: Download PowerDNS Admin version {{ pdns_admin_version }}
+  ansible.builtin.unarchive:
+    src: "https://github.com/ngoduykhanh/PowerDNS-Admin/archive/refs/tags/v{{ pdns_admin_version }}.tar.gz"
+    dest: "{{ pdns_admin_dir }}"
+    remote_src: yes
+    owner: "{{ pdns_user }}"
+    group: "{{ pdns_group }}"

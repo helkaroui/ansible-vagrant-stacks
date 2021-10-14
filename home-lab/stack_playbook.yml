@@ -1,0 +1,9 @@
+---
+- hosts: rpi-gateway
+  become: true
+  roles:
+    - role: rpi_settings
+      tags: ['rpi', 'gateway']
+
+    - role: powerdns
+      tags: ['rpi', 'gateway']

@@ -1,0 +1,23 @@
+---
+
+- import_tasks: hostname.yml
+  tags:
+    - apt
+    - config
+
+- import_tasks: packages.yml
+  tags:
+    - apt
+    - config
+
+- import_tasks: ufw.yml
+  tags:
+    - apt
+    - config
+    - firewall
+
+- import_tasks: fail2ban.yml
+  tags:
+    - apt
+    - config
+    - firewall

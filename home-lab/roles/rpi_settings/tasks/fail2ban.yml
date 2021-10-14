@@ -1,0 +1,27 @@
+---
+
+- name: install fail2ban
+  apt:
+    package: fail2ban
+    state: present
+
+- name: remove configuration file - /etc/fail2ban/jail.d/defaults-debian.conf
+  file:
+    state: absent
+    path: /etc/fail2ban/jail.d/defaults-debian.conf
+  notify: restart fail2ban
+
+- name: configure fail2ban
+  template:
+    src: fail2ban/custom.j2
+    dest: /etc/fail2ban/jail.d/custom.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart fail2ban
+
+- name: start and enable service
+  service:
+    name: fail2ban
+    state: started
+    enabled: true

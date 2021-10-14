@@ -1,0 +1,19 @@
+---
+
+- name: setup pdns group {{ pdns_group }}
+  ansible.builtin.group:
+    name: "{{ pdns_group }}"
+    state: present
+    system: yes
+    gid: 2000
+
+- name: setup pdns user {{ pdns_user }}
+  user:
+    name: "{{ pdns_user }}"
+    groups: "{{ pdns_group }},root"
+    password: "{{ pdns_user_password|password_hash('sha512', pdns_user_salt) }}"
+    update_password: always
+    state: present
+    create_home: no
+    system: yes
+  when: pdns_user_password is defined and pdns_user_salt is defined

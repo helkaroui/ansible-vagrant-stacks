@@ -1,0 +1,61 @@
+---
+
+- name: Prefix the PowerDNS version with the correct separator on Debian
+  set_fact:
+    _pdns_package_version: "={{ pdns_package_version }}"
+  when: ansible_os_family == 'Debian'
+
+- block:
+  - name: Add pdns to apt sources
+    copy:
+      content: |
+        deb [arch=amd64] http://repo.powerdns.com/ubuntu focal-rec-46 main
+        deb [arch=amd64] http://repo.powerdns.com/ubuntu focal-auth-46 main
+      dest: "/etc/apt/sources.list.d/pdns.list"
+      backup: true
+  
+  - name: Add pdns to apt preferences
+    copy:
+      content: |
+        Package: pdns-*
+        Pin: origin repo.powerdns.com
+        Pin-Priority: 600
+      dest: "/etc/apt/preferences.d/pdns"
+      backup: true
+  
+  - name: Add an Apt signing key
+    ansible.builtin.apt_key:
+      url: https://repo.powerdns.com/FD380FBB-pub.asc
+      state: present
+
+  - name: Run apt-get update
+    apt:
+      update_cache: yes
+
+- name: Install PowerDNS aut server
+  package:
+    name: "{{ pdns_package_name }}"
+    state: present
+
+- name: Install PowerDNS rec server
+  package:
+    name: "{{ pdns_recursor_package_name }}"
+    state: present
+
+- name: Install PowerDNS backends
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ pdns_backends_packages }}"
+
+- name: Obtain the version of the running PowerDNS instance
+  shell: |
+    pdns_server --version 2>&1 | awk '/PowerDNS Authoritative/{print $7}'
+  register: _pdns_version
+  check_mode: no
+  changed_when: False
+
+- name: Export the running PowerDNS instance version to a variable
+  set_fact:
+    _pdns_running_version: "{{ _pdns_version['stdout'] | regex_replace('-[.\\d\\w]+$', '') }}"

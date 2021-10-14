@@ -1,0 +1,21 @@
+system_packages:
+  - net-tools
+
+ufw_defaults:
+  - { direction: "incoming", policy: "deny" }
+  - { direction: "outgoing", policy: "allow" }
+
+ufw_rules:
+  - { rule: "allow", port: "22", proto: "tcp" }
+  - { rule: "allow", port: "53", proto: "tcp" }
+  - { rule: "allow", port: "5300", proto: "tcp" }
+  - { rule: "allow", port: "5400", proto: "tcp" }
+
+
+fail2ban_ignored_ips:
+  - 127.0.0.1
+  - 192.168.1.61
+
+fail2ban_bantime: 24h
+fail2ban_maxretry: 3
+fail2ban_findtime: 10m

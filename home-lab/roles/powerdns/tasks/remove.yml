@@ -1,0 +1,10 @@
+sudo apt remove -y pdns-server
+sudo apt remove -y pdns-recursor
+sudo rm -rf /etc/powerdns
+sudo rm -rf /var/lib/powerdns
+
+sudo apt autoremove
+
+
+srw-rw----  1 root pdns    0 Oct 10 14:43 pdns.controlsocket=
+srwxr-xr-x  1 root  119    0 Oct 10 13:38 pdns_recursor.controlsocket=

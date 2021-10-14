@@ -1,0 +1,50 @@
+pdns_user: pdns
+pdns_group: pdns
+pdns_user_password: P92zYsqedOQZ
+pdns_user_salt: O2QerK0lupSW
+
+
+pdns_package_name: pdns-server
+pdns_recursor_package_name: pdns-recursor
+pdns_package_version: '4.2.1'
+pdns_backends_packages:
+  - pdns-backend-sqlite3
+
+pdns_backends:
+  gsqlite3:
+    database: '/var/lib/powerdns/db.sqlite'
+    dnssec: yes
+    sqlfile: ''
+
+
+pdns_config_dir: '/etc/powerdns'
+pdns_include_dir: "{{pdns_config_dir}}/pdns.d"
+pdns_recursor_include_dir: "{{pdns_config_dir}}/recursor.d"
+pdns_config_file: 'pdns.conf'
+pdns_run_dir: '/var/run/pdns'
+pdns_recursor_run_dir: '/var/run/pdns-recursor'
+pdns_recursor_config_file: 'recursor.conf'
+
+recursor_host: 0.0.0.0
+recursor_port: 5300
+
+pdns_host: 127.0.0.1
+pdns_port: 5400
+
+forward_zones: 
+  - "sharek.io={{ pdns_host }}:{{ pdns_port }}"
+  - "sharek.local={{ pdns_host }}:{{ pdns_port }}"
+  - "sharek.dev={{ pdns_host }}:{{ pdns_port }}"
+  - "sharek.home={{ pdns_host }}:{{ pdns_port }}"
+
+forward_zones_recurse: 
+  - ".=8.8.8.8;8.8.4.4"
+
+
+loglevel: 6 # from 0 to 9
+log_queries: true # TODO set to false
+trace: "yes" # TODO set to false
+
+
+pdns_admin_version: 0.2.3
+pdns_admin_dir: '/etc/powerdns-admin'

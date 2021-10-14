@@ -1,0 +1,24 @@
+---
+
+- import_tasks: install.yml
+  tags:
+    - pdns
+    - dns
+
+- import_tasks: user.yml
+  tags:
+    - pdns
+    - dns
+
+- import_tasks: database_sqlite3.yml
+  tags:
+    - pdns
+    - dns
+    - db
+    - sqlite
+
+- import_tasks: configure.yml
+  tags:
+    - pdns
+    - dns
+    - service
