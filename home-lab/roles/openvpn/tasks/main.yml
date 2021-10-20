@@ -1,0 +1,16 @@
+---
+
+- name: Install OpenVPN
+  import_tasks: install.yml
+  tags:
+    - install
+
+- name: setup openvpn server or client
+  ansible.builtin.include_tasks:
+    file: "setup-{{ openvpn_role }}.yml"
+
+- name: start and enable openvpn
+  ansible.builtin.service:
+    name: "{{ openvpn_service }}"
+    state: started
+    enabled: yes

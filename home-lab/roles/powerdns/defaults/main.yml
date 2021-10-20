@@ -45,6 +45,6 @@ loglevel: 6 # from 0 to 9
 log_queries: true # TODO set to false
 trace: "yes" # TODO set to false
 
+domains_sql_file: '/var/lib/powerdns/domains.sql'
 
-pdns_admin_version: 0.2.3
-pdns_admin_dir: '/etc/powerdns-admin'
+kubernetes_host: 192.168.1.71

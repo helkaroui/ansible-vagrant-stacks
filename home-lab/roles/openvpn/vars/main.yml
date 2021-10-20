@@ -1,0 +1,16 @@
+_openvpn_packages:
+  server:
+    - openvpn
+    - easy-rsa
+  client:
+    - openvpn
+
+openvpn_packages: "{{ _openvpn_packages[openvpn_role] }}"
+
+openvpn_service: openvpn
+
+openvpn_easyrsa_path: /usr/share/easy-rsa
+
+openvpn_configuration_directory: /etc/openvpn
+
+openvpn_group: nogroup

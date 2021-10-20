@@ -7,7 +7,6 @@ ufw_defaults:
 
 ufw_rules:
   - { rule: "allow", port: "22", proto: "tcp" }
-  - { rule: "allow", port: "53", proto: "tcp" }
   - { rule: "allow", port: "5300", proto: "tcp" }
   - { rule: "allow", port: "5400", proto: "tcp" }
 

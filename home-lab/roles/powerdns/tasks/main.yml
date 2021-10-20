@@ -22,3 +22,10 @@
     - pdns
     - dns
     - service
+
+- import_tasks: domains.yml
+  tags:
+    - pdns
+    - dns
+    - service
+    - domains

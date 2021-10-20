@@ -1,9 +1,16 @@
 ---
 
-- name: Download PowerDNS Admin version {{ pdns_admin_version }}
-  ansible.builtin.unarchive:
-    src: "https://github.com/ngoduykhanh/PowerDNS-Admin/archive/refs/tags/v{{ pdns_admin_version }}.tar.gz"
-    dest: "{{ pdns_admin_dir }}"
-    remote_src: yes
+- name: Add domains file
+  template:
+    src: "domains.sql.j2"
+    dest: "{{ domains_sql_file }}"
     owner: "{{ pdns_user }}"
     group: "{{ pdns_group }}"
+  register: domains_updated
+
+- name: Update domains
+  shell: "sqlite3 {{ item }} < {{ domains_sql_file }}"
+  args:
+    creates: "{{ item }}"
+  with_items: "{{ pdns_backends.gsqlite3.database }}"
+  when: domains_updated is defined

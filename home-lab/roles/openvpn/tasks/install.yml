@@ -1,0 +1,6 @@
+---
+
+- name: install openvpn packages
+  ansible.builtin.package:
+    name: "{{ openvpn_packages }}"
+    state: present

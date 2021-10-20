@@ -1,0 +1,11 @@
+DELETE FROM domains;
+DELETE FROM records;
+
+
+INSERT INTO domains (id, name, type) values (1, 'sharek.io', 'NATIVE');
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'sharek.io','localhost admin.sharek.io 1 10380 3600 604800 3600','SOA',86400,NULL);
+
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'sharek.io','{{ kubernetes_host }}','A',120,NULL);
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'wwww.sharek.io','sharek.io','A',120,NULL);
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'zeppelin.sharek.io','sharek.io','A',120,NULL);
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'demo.sharek.io','sharek.io','A',120,NULL);
