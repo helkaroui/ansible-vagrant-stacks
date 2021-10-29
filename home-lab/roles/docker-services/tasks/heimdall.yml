@@ -1,0 +1,6 @@
+---
+
+- name: Configure Heimdall .env file
+  copy:
+    src: heimdall/.env
+    dest: "{{ volumes.heimdall_volume_dir }}/www/.env"

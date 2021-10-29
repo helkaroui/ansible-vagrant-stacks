@@ -1,0 +1,7 @@
+---
+
+- name: Restart docker-compose stack
+  community.docker.docker_compose:
+    project_src: "{{ directories['project_dir'] }}"
+    build: no
+    restarted: yes

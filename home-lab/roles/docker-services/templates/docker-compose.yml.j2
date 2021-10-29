@@ -1,0 +1,35 @@
+---
+version: "2.1"
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=998
+      - TZ=Europe/Paris
+    volumes:
+      - {{ volumes["heimdall_volume_dir"] }}:/config
+    ports:
+      - "8080:80"
+      - "8443:443"
+    restart: unless-stopped
+
+  pihole:
+    image: pihole/pihole:v5.8.1
+    container_name: pihole
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ="Europe/Paris"
+      - WEBPASSWORD="admin"
+      - VIRTUAL_HOST="pi.hole"
+      - PROXY_LOCATION="pi.hole"
+      - PIHOLE_DNS_='192.168.1.48#5300;8.8.8.8;8.8.4.4'
+    #volumes:
+    #  - {{ volumes["pihole_etc_volume_dir"] }}:/etc/pihole/
+    #  - {{ volumes["pihole_dnsmasq_volume_dir"] }}:/etc/dnsmasq.d/
+    ports:
+      - "8081:80"
+      - "5330:53"
+    restart: unless-stopped

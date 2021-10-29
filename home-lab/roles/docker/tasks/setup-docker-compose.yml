@@ -1,0 +1,18 @@
+---
+
+- name: Install packages that allow pip to install docker-compose
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - libffi-dev
+    - libssl-dev
+    - python3 
+    - python3-pip
+    - python3-dev
+
+- name: Install docker compose
+  pip:
+    name: docker-compose

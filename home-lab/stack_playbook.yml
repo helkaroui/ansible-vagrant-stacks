@@ -7,3 +7,9 @@
 
     - role: powerdns
       tags: ['rpi', 'gateway']
+
+    - role: docker
+      tags: ['rpi', 'gateway', 'docker']
+
+    - role: docker-services
+      tags: ['rpi', 'gateway', 'docker-services']

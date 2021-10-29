@@ -1,0 +1,10 @@
+---
+
+directories:
+  project_dir: "/data/docker/gateway-stack"
+  project_volumes_dir: "/data/docker/gateway-stack/volumes"
+
+volumes:
+  heimdall_volume_dir: '{{ directories["project_volumes_dir"] }}/heimdall'
+  pihole_etc_volume_dir: '{{ directories["project_volumes_dir"] }}/pihole-etc'
+  pihole_dnsmasq_volume_dir: '{{ directories["project_volumes_dir"] }}/pihole-dnsmasq'

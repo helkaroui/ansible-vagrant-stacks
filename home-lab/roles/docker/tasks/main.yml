@@ -1,0 +1,11 @@
+---
+
+- name: Print os-family
+  ansible.builtin.debug:
+    msg: OS Family {{ ansible_os_family }}
+  
+- include_tasks: setup-debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: setup-docker-compose.yml
+  when: ansible_os_family == 'Debian'
