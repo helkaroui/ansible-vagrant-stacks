@@ -1,0 +1,8 @@
+[k8s-master]
+kube-1 ansible_host=192.168.1.56 ansible_connection=ssh ansible_user=ubuntu ansible_ssh_pass=Khouloud1993 k8s_role=master k8s_arch=amd64
+
+[k8s:children]
+k8s-master
+
+[rpi-gateway]
+rpi-gate-1 ansible_host=192.168.1.48 ansible_connection=ssh ansible_user=ubuntu ansible_ssh_pass=4k1k1NC1KkAs

@@ -5,9 +5,9 @@
   tags:
     - install
 
-- name: setup openvpn server or client
+- name: setup openvpn server
   ansible.builtin.include_tasks:
-    file: "setup-{{ openvpn_role }}.yml"
+    file: "setup-server.yml"
 
 - name: start and enable openvpn
   ansible.builtin.service:

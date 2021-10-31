@@ -13,3 +13,6 @@
 
     - role: docker-services
       tags: ['rpi', 'gateway', 'docker-services']
+
+    - role: openvpn
+      tags: ['vpn', 'gateway']
