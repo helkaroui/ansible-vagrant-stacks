@@ -6,7 +6,7 @@ swap_file_path: /dev/mapper/packer--debian--9--amd64--vg-swap_1
 
 
 # Kubectl Role
-kubectl_config_path: "/root/.kube/config"
+kubectl_config_path: "/home/{{ansible_user}}/.kube/config"
 kubectl_local_tmp_path: ".kube/kubectl-config"
 
 # Apps

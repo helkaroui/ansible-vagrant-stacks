@@ -7,17 +7,17 @@
         
   roles:
     - role: karoui.swap
-      tags: ['swap', 'kubernetes']
+      tags: ['swap']
 
     - role: karoui.docker
-      tags: ['docker', 'kubernetes']
+      tags: ['docker']
 
     - role: karoui.k8s-setup
-      tags: ['kubernetes']
+      tags: ['k8s-setup']
     
     - role: karoui.k8s-kubectl
-      tags: ['kubernetes']
+      tags: ['k8s-kubectl']
 
     - role: karoui.k8s-default-apps
-      tags: ['kubernetes']
+      tags: ['k8s-apps']
       when: kubernetes_role == 'master'

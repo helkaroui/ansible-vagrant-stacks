@@ -13,6 +13,7 @@
     dest: "{{ kubernetes_kubeadm_kubelet_config_file_path }}"
 
 - name: Initialize Kubernetes master with kubeadm init
+  become: true
   command: >
     kubeadm init
     --config {{ kubernetes_kubeadm_kubelet_config_file_path }}
@@ -21,6 +22,7 @@
   when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is not defined) and (not kubernetes_skip_init)
 
 - name: Initialize Kubernetes master with kubeadm init and ignore_preflight_errors
+  become: true
   command: >
     kubeadm init
     --config {{ kubernetes_kubeadm_kubelet_config_file_path }}
@@ -28,6 +30,7 @@
     {{ kubernetes_kubeadm_init_extra_opts }}
   register: kubeadmin_init
   when: (not kubernetes_init_stat.stat.exists) and (kubernetes_ignore_preflight_errors is defined) and (not kubernetes_skip_init)
+  notify: restart kubelet
 
 - name: Print the init output to screen.
   debug:
@@ -42,13 +45,14 @@
     mode: 0755
 
 - name: Symlink the kubectl admin.conf to ~/.kube/conf.
+  become: yes
   file:
     src: /etc/kubernetes/admin.conf
     dest: "/home/{{ansible_user}}/.kube/config"
     owner: "{{ansible_user}}"
     group: "{{ansible_user}}"
     state: link
-    mode: 0644
+    #mode: 0644
 
 - name: Configure Calico networking.
   command: "{{ item }}"

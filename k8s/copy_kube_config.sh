@@ -1,0 +1,1 @@
+rsync -avu --delete .kube/ ~/.kube/

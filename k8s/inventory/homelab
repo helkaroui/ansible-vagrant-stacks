@@ -1,0 +1,8 @@
+[k8s-master]
+kube-1 ansible_host=192.168.1.56 kubernetes_role=master ansible_connection=ssh
+
+[k8s:children]
+k8s-master
+
+[k8s:vars]
+ansible_user=ubuntu

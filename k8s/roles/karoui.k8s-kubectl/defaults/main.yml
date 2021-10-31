@@ -1,2 +1,2 @@
-kubectl_config_path: "/root/.kube/config"
-kubectl_local_tmp_path: ".kube/kubectl-config"
+kubectl_config_path: "/home/{{ansible_user}}/.kube/config"
+kubectl_local_tmp_path: ".kube/config"

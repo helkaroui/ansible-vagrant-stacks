@@ -1,5 +1,6 @@
 ---
 - name: Ensure procps is installed.
+  become: true
   package:
     name: "{{ procps_package }}"
     state: present
